@@ -1,62 +1,78 @@
-# retropad
+# macpad
 
-A Petzold-style Win32 Notepad clone written in mostly plain C. It keeps the classic menus, accelerators, word wrap toggle, status bar, find/replace, font picker, time/date insertion, and BOM-aware load/save. Printing is intentionally omitted.
+macpad is a native macOS AppKit plain-text editor. It uses Cocoa/AppKit directly: no Electron, no Wine, no Windows compatibility wrapper.
 
-## Prerequisites (Windows)
-- Git
-- Visual Studio 2022 (or Build Tools) with the "Desktop development with C++" workload
-- Use a "x64 Native Tools Command Prompt for VS 2022" (or any Developer Command Prompt) so `cl`, `rc`, and `nmake` are on your `PATH`.
+## Requirements
 
-Optional: MinGW-w64 for `make` + `gcc` (a separate POSIX-style `Makefile` is included).
+- macOS 11 or later
+- Xcode Command Line Tools (`clang`, `make`)
 
-## Get the code
-```bat
-git clone https://github.com/your/repo.git retropad
-cd retropad
+Install the command line tools if needed:
+
+```sh
+xcode-select --install
 ```
 
-## Build with MSVC (`nmake`)
-From a Developer Command Prompt:
-```bat
-nmake /f makefile
-```
-This runs `rc` then `cl` and produces `retropad.exe` in the repo root. Clean with:
-```bat
-nmake /f makefile clean
-```
+## Build
 
-## Build with MinGW (optional)
-If you have `gcc`, `windres`, and `make` on PATH:
-```bash
+```sh
 make
 ```
-Artifacts end up in the repo root (`retropad.exe`, object files, and `retropad.res`). Clean with `make clean`.
 
-## Run
-Double-click `retropad.exe` or start from a prompt:
-```bat
-.\retropad.exe
+This creates:
+
+```text
+build/macpad.app
 ```
 
-## Features & notes
-- Menus/accelerators: File, Edit, Format, View, Help; classic Notepad key bindings (Ctrl+N/O/S, Ctrl+F, F3, Ctrl+H, Ctrl+G, F5, etc.).
-- Word Wrap toggles horizontal scrolling; status bar auto-hides while wrapped, restored when unwrapped.
-- Find/Replace dialogs (standard `FINDMSGSTRING`), Go To (disabled when word wrap is on).
-- Font picker (ChooseFont), time/date insertion, drag-and-drop to open files.
-- File I/O: detects UTF-8/UTF-16 BOMs, falls back to UTF-8/ANSI heuristic; saves with UTF-8 BOM by default.
-- Printing/page setup menu items show a “not implemented” notice by design.
-- Icon: linked as the main app icon from `res/retropad.ico` via `retropad.rc`.
+## Run
 
-## Project layout
-- `retropad.c` — WinMain, window proc, UI logic, find/replace, menus, layout.
-- `file_io.c/.h` — file open/save dialogs and encoding-aware load/save helpers.
-- `resource.h` — resource IDs.
-- `retropad.rc` — menus, accelerators, dialogs, version info, icon.
-- `res/retropad.ico` — application icon.
-- `makefile` — MSVC `nmake` build script.
-- `Makefile` — MinGW/GNU make build script.
+```sh
+make run
+```
 
-## Common build hiccups
-- If `nmake` is missing, use a Developer Command Prompt (it sets up `PATH`).
-- If you see RC4204 warnings about ASCII/virtual keys, they’re benign and come from control-key accelerator lines.
-- If `rc`/`cl` aren’t found, rerun `vcvarsall.bat` or reopen the Developer Command Prompt.
+Or open the app directly:
+
+```sh
+open build/macpad.app
+```
+
+## Clean
+
+```sh
+make clean
+```
+
+## macOS Features
+
+- Native AppKit menu bar and document window
+- Multiple document windows
+- Native macOS Window menu for minimizing, zooming, focusing, and bringing windows forward
+- Plain-text editing with `NSTextView`
+- New, Open, Save, Save As, Close, Quit
+- Native open/save panels
+- Native printing and page setup
+- Undo, redo, cut, copy, paste, delete, select all
+- Native find and replace panel
+- Go To Line
+- Time/date insertion
+- Word wrap toggle
+- Font panel integration
+- Status bar with line, column, and total line count
+- Optional line number ruler
+- Drag-and-drop opening for files
+- BOM-aware text loading and saving for UTF-8, UTF-16LE, UTF-16BE, and Windows-1252 fallback
+
+## Project Layout
+
+- `macos/MacpadApp.m` - native AppKit application source
+- `macos/Info.plist` - macOS bundle metadata and document type registration
+- `macos/macpad.entitlements` - sandbox entitlements for local signed builds
+- `macos/Assets/macpad.icns` - bundled macOS app icon
+- `macos/Assets/macpad-icon-source.png` - generated source artwork for the icon
+- `Makefile` - macOS build
+- `LICENSE` - BSD 3-Clause License, copied into the app bundle resources at build time
+
+## License
+
+This project remains under the BSD 3-Clause License. Source redistributions retain the copyright notice and license text in `LICENSE`; binary app bundles include a copy at `Contents/Resources/LICENSE`, and the app exposes the same notice from `Help > License`.

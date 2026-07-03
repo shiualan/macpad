@@ -1,0 +1,5 @@
+build/
+binaries/
+.DS_Store
+MacpadApp.plist
+SECURITY.md
